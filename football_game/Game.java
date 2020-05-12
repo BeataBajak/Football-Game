@@ -42,7 +42,7 @@ public class Game {
 
         int temp=0;
         try {
-            FileReader fileReader = new FileReader("src/pl/project/teams.txt");
+            FileReader fileReader = new FileReader("src/pl/football_game/teams.txt");
             BufferedReader bufferReader = new BufferedReader(fileReader);
             String line;
             while((line = bufferReader.readLine()) != null) {
