@@ -10,84 +10,39 @@ public class Game {
         return "Game{}";
     }
 
-    public static class TeamsComparator implements Comparator<Team>{
-        private List<Comparator<Team>> listComparators;
+    List<Team> sortScores(List<Team> list){
+        Comparator<Team> comparator = Comparator.comparing(team -> team.points);
+        comparator = comparator.thenComparing(Comparator.comparing(team -> team.numberOfGoalsScored));
 
-        @SafeVarargs
-        public TeamsComparator(Comparator<Team>...comparators){
-            this.listComparators = Arrays.asList(comparators);
-        }
+        // Sort the stream:
+        Stream<Team> personStream = list.stream().sorted(comparator);
+        List<Team> sortedTeamsList = personStream.collect(Collectors.toList());
 
-        @Override
-        public int compare(Team A, Team B){
-            for(Comparator<Team> comparator : listComparators){
-                int result = comparator.compare(A,B);
-                if(result!=0){
-                    return result;
-                }
-            }
-            return 0;
-        }
+        //return the list
+        Collections.reverse(sortedTeamsList);
+        return sortedTeamsList;
     }
 
-    public static class PointsComparator implements Comparator<Team>{
-        @Override
-        public int compare(Team A, Team B){
-            if(A.points<B.points){
-                return 1;
-            } else {
-                return -1;
-            }
-        }
-    }
+    void printScore (List<Team> teamsList){
+        List<Team> sortedTeamsList = sortScores(teamsList);
 
-    public static class GoalsScoredComparator implements Comparator<Team>{
-        @Override
-        public int compare(Team A, Team B){
-            if(A.numberOfGoalsScored<B.numberOfGoalsScored){
-                return 1;
-            } else {
-                return -1;
-            }
-        }
-    }
+        System.out.printf("%-25s %25s %10s %25s %25s", "TEAM", "NUMBER OF MATCHES WON", "POINTS", "NUMBER OF GOALS SCORED", "NUMBER OF GOALS LOST");
+        System.out.println();
 
-    public static class LpComparator implements Comparator<Team>{
-        @Override
-        public int compare(Team A, Team B){
-            if(A.lp<B.lp){
-                return 1;
-            } else {
-                return -1;
-            }
+        for (int k = 1; k<teamsList.size();k++){
+            System.out.printf("%-25s %25s %10s %25s %25s", sortedTeamsList.get(k-1).teamName, sortedTeamsList.get(k-1).numberOfMatchesWon, sortedTeamsList.get(k-1).points, sortedTeamsList.get(k-1).numberOfGoalsScored, sortedTeamsList.get(k-1).numberOfGoalsLost);
+            System.out.println();
         }
-    }
-
-    public static class GoalsLostComparator implements Comparator<Team>{
-        @Override
-        public int compare(Team A, Team B){
-            if(A.numberOfGoalsLost>B.numberOfGoalsLost){
-                return 1;
-            } else {
-                return -1;
-            }
-        }
+        System.out.println();
     }
 
     public static void main(String[] args) throws IOException{
-        String path;
-        String fileName;
-        Scanner input = new Scanner(System.in);
-        System.out.println("Please put the path where the file with teams' names is saved:");
-        path = input.nextLine();
-        System.out.println("file's name:");
-        fileName = input.nextLine();
-        //Path filePath = Paths.get(path);
+        pl.project.football_game.Game game = new pl.project.football_game.Game();
         List<Team> teamsList = new LinkedList<>();
 
         int temp=0;
         try {
-            FileReader fileReader = new FileReader(fileName);
+            FileReader fileReader = new FileReader("src/pl/project/teams.txt");
             BufferedReader bufferReader = new BufferedReader(fileReader);
             String line;
             while((line = bufferReader.readLine()) != null) {
@@ -147,32 +102,10 @@ public class Game {
 
             }
             System.out.println("");
-            Collections.sort(teamsList,new TeamsComparator(
-                    new PointsComparator(),
-                    new GoalsScoredComparator())
-                    //new GoalsLostComparator())
-            );
-            System.out.printf("%-25s %25s %10s %25s %25s", "TEAM", "NUMBER OF MATCHES WON", "POINTS", "NUMBER OF GOALS SCORED", "NUMBER OF GOALS LOST");
-            System.out.println();
 
-            for (int k = 1; k<teamsList.size();k++){
-                System.out.printf("%-25s %25s %10s %25s %25s", teamsList.get(k-1).teamName, teamsList.get(k-1).numberOfMatchesWon, teamsList.get(k-1).points, teamsList.get(k-1).numberOfGoalsScored, teamsList.get(k-1).numberOfGoalsLost);
-                System.out.println();
-            }
-            System.out.println();
-            Collections.sort(teamsList,new LpComparator());
-        }
-        Collections.sort(teamsList,new TeamsComparator(
-                new PointsComparator(),
-                new GoalsScoredComparator())
-               // new GoalsLostComparator())
-        );
-        System.out.printf("%-25s %25s %10s %25s %25s", "TEAM", "NUMBER OF MATCHES WON", "POINTS", "NUMBER OF GOALS SCORED", "NUMBER OF GOALS LOST");
-        System.out.println();
+            game.printScore(teamsList);
 
-        for (int k = 1; k<teamsList.size();k++){
-            System.out.printf("%-25s %25s %10s %25s %25s", teamsList.get(k-1).teamName, teamsList.get(k-1).numberOfMatchesWon, teamsList.get(k-1).points, teamsList.get(k-1).numberOfGoalsScored, teamsList.get(k-1).numberOfGoalsLost);
-            System.out.println();
         }
+        game.printScore(teamsList);
     }
 }
