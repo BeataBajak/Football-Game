@@ -86,12 +86,6 @@ public class Team {
     }
 
     public Team(){
-       /*Object[][] Team = new String[2][11];
-        for(int i =0; i<11;i++){
-            Player player_i = new Player();
-            player_i.number=i;
-            Team[0][i]=player_i.number;
-            Team[1][i]=player_i.surname;
-        }*/
+       
     }
 }
